@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { ApplicationNamesType } from "../types";
-import { useNotificationStore } from "./alert.store";
+import { useNotificationStore } from "./notification.store";
 import { sendHttpRequest } from "../http";
 import { IBaseErrorObject } from "../interface/base.interface";
 
@@ -14,7 +14,7 @@ interface IThemeStore {
 		isRawPrompt?: boolean;
 		monthlyExpense: number;
 		rawPromptMessage?: string;
-	}) => void;
+	}) => Promise<void>;
 }
 
 
@@ -26,13 +26,14 @@ export const useAnalysisStore = create<IThemeStore>((set) => ({
 		try {
 			set({ isLoading: true });
 			const { data, message } = await sendHttpRequest<any>({
-				url: 'analysis',
+				url: '/analysis',
 				method: 'post',
 				data: { ...analysisDto }
 			});
 			useNotificationStore.getState().sendAlert(message);
 			set({ analysis: data.analysis });
 		} catch (error) {
+			console.log('error', error);
 			useNotificationStore.getState().sendErrorAlert(error);
 			set({ analysis: null });
 		} finally {

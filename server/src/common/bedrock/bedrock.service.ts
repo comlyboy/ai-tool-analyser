@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 
 import { BedrockModelIdType } from 'src/types';
+import { CreateAnalysisDto } from 'src/core/analysis/dto/analysis.dto';
 
 @Injectable()
 export class BedrockService {
@@ -36,6 +37,12 @@ export class BedrockService {
 
 		const output = new TextDecoder().decode(response.body);
 		return JSON.parse(output) as Record<string, any>;
+	}
+
+
+	async generateContext(createAnalysisDto: CreateAnalysisDto) {
+
+		return '';
 	}
 
 }

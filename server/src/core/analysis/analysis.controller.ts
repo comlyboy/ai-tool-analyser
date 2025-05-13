@@ -1,7 +1,8 @@
-import { Controller, Inject, Post, Res } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Res } from '@nestjs/common';
 
 import { AnalysisService } from './analysis.service';
 import { Response } from 'express';
+import { CreateAnalysisDto } from './dto/analysis.dto';
 
 @Controller('analysis')
 export class AnalysisController {
@@ -11,8 +12,9 @@ export class AnalysisController {
 	@Post()
 	async analyse(
 		@Res() res: Response,
+		@Body() createAnalysisDto: CreateAnalysisDto
 	) {
-		const data = await this.analysisService.analyse();
+		const data = await this.analysisService.analyse(createAnalysisDto);
 		return res.status(201).json({ statusCode: 201, data });
 	}
 

@@ -8,10 +8,14 @@ import TextareaInput from "../components/TextareaInput";
 import SelectInput from "../components/SelectInput";
 import { ApplicationNamesEnum, ApplicationNamesType } from "../types";
 import { toTitleCase } from "../utility";
+import { useAnalysisStore } from "../stores";
+import NotificationComponent from "../components/NotificationComponent";
 
 export default function HomePage() {
 
 	const [modalIsOpened, setModalIsOpened] = useState<boolean>(false);
+
+	const { analysis, createAnalysis } = useAnalysisStore()
 
 	const promptFormGroup = useForm<{
 		applicationName: ApplicationNamesType;
@@ -26,14 +30,25 @@ export default function HomePage() {
 
 	const watchPrompt = promptFormGroup.watch('isRawPrompt')!;
 
+	async function onSubmit() {
+		await createAnalysis(promptFormGroup.getValues())
+	}
+
 	return <>
+		<NotificationComponent />
 		<HeaderComponent />
 		<PageLayout className="pt-20 pb-6 px-4 md:px-6 container mx-auto">
 			<div className="flex justify-end mb-4">
 				<button type="button" onClick={() => setModalIsOpened(true)} className="bg-blue-500 text-white px-8 py-2 rounded-lg cursor-pointer">New Analysis</button>
 			</div>
 
-			<div className="border border-slate-300 rounded-lg p-3 bg-white">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Necessitatibus blanditiis laborum praesentium quam omnis rerum eum cum quis nemo ad? Quisquam dignissimos, ipsa perspiciatis perferendis optio voluptate inventore? Dignissimos, itaque.</div>
+			<div className="border border-slate-300 rounded-lg p-3 bg-white">
+
+				{!analysis && <div className="py-6">
+					<p className="text-center">No analysis done yet. <span onClick={() => setModalIsOpened(true)} className="text-blue-500 hover:underline cursor-pointer">Create new</span> </p>
+				</div>}
+
+			</div>
 		</PageLayout>
 
 
@@ -42,10 +57,13 @@ export default function HomePage() {
 			title: 'Submit Prompt for AI Analysis',
 			subTitle: 'Provide a detailed prompt for analysis using AWS Bedrock\'s foundation models'
 		}} modalResult={() => setModalIsOpened(false)}>
-			<form onSubmit={() => { }}>
+			<form onSubmit={promptFormGroup.handleSubmit(onSubmit)}>
 
-				<SelectInput name="applicationName" label="Application name" placeholder="Select application..." required disabled={watchPrompt} control={promptFormGroup.control} options={Object.values(ApplicationNamesEnum).map(appName => {
-					return { label: toTitleCase(appName.replace('-', ' ')), value: appName }
+				<SelectInput name="applicationName" label="Application name" placeholder="Select application..." required control={promptFormGroup.control} options={Object.values(ApplicationNamesEnum).map(appName => {
+					return {
+						label: toTitleCase(appName.replace('-', ' ')),
+						value: appName
+					}
 				})} rules={{ required: true }} />
 
 				<div className="flex items-center gap-3">
@@ -59,7 +77,6 @@ export default function HomePage() {
 							placeholder: 'Monthly expense...'
 						}} control={promptFormGroup.control} rules={{ required: true }} />
 					</div>
-
 					<div className="w-1/2">
 						<TextInput options={{
 							name: 'yearlyExpense',

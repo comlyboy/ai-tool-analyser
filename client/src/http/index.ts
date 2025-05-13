@@ -23,7 +23,7 @@ export async function sendHttpRequest<TResponse = any, TBody extends Record<stri
 export function getAxiosInstance() {
 	// cancel previous http request https://www.youtube.com/watch?v=cIwpavIhI84
 	let jwtToken: string | null = null;
-	const baseURL = 'http://localhost:3033/api';
+	const baseURL = 'http://localhost:3330/api';
 	const instance = axios.create({ baseURL });
 
 	function getLocalToken() {
