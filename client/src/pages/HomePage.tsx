@@ -1,3 +1,98 @@
+import { useState } from "react";
+import HeaderComponent from "../components/HeaderComponent";
+import PageLayout from "../components/layouts/PageLayout";
+import ModalLayout from "../components/layouts/ModalLayout";
+import { useForm } from "react-hook-form";
+import TextInput from "../components/TextInput";
+import TextareaInput from "../components/TextareaInput";
+import SelectInput from "../components/SelectInput";
+import { ApplicationNamesEnum, ApplicationNamesType } from "../types";
+import { toTitleCase } from "../utility";
+
 export default function HomePage() {
-	return <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam dolorum debitis dolor et atque rerum hic illum minus dicta eveniet dolores qui alias fugiat nam rem corrupti, a corporis aut incidunt quo sed unde enim expedita? Dolores, tempore quas quis eveniet delectus odit voluptates quibusdam perferendis vel? Maxime veritatis praesentium animi quo, placeat fugit sapiente nihil facilis a eius quam eaque vero facere quisquam temporibus repellendus in illo voluptatum assumenda quos suscipit quidem. Velit quod dicta eveniet blanditiis totam quam inventore ratione nulla alias! Possimus magni nulla suscipit ab fuga dolorum consectetur quibusdam incidunt facere excepturi? Ut, soluta ipsum pariatur dolorem debitis, quos assumenda nulla magnam molestiae provident voluptatem similique ratione harum corporis animi quasi iusto odit quas architecto, quo iure nobis nemo id obcaecati. Dolorum voluptatem dolores laboriosam. Debitis vitae ex consequatur, adipisci laboriosam ipsam, ad distinctio earum error, inventore aspernatur rem a minus. Officiis sint voluptas itaque dolor impedit optio hic nobis obcaecati sapiente id? Qui, placeat! Placeat voluptatum quia dignissimos, eaque ratione ipsum veritatis sunt praesentium provident iste doloremque earum eum, assumenda fuga unde. Molestiae cumque quisquam iure impedit laborum corrupti distinctio eligendi blanditiis error sed, consectetur amet sapiente temporibus ipsa quidem voluptate cupiditate facilis ullam illum.</div>
+
+	const [modalIsOpened, setModalIsOpened] = useState<boolean>(false);
+
+	const promptFormGroup = useForm<{
+		applicationName: ApplicationNamesType;
+		yearlyExpense: number;
+		isRawPrompt?: boolean;
+		monthlyExpense: number;
+		rawPromptMessage?: string;
+	}>({
+		mode: 'onChange',
+		defaultValues: { isRawPrompt: false }
+	});
+
+	const watchPrompt = promptFormGroup.watch('isRawPrompt')!;
+
+	return <>
+		<HeaderComponent />
+		<PageLayout className="pt-20 pb-6 px-4 md:px-6 container mx-auto">
+			<div className="flex justify-end mb-4">
+				<button type="button" onClick={() => setModalIsOpened(true)} className="bg-blue-500 text-white px-8 py-2 rounded-lg cursor-pointer">New Analysis</button>
+			</div>
+
+			<div className="border border-slate-300 rounded-lg p-3 bg-white">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Necessitatibus blanditiis laborum praesentium quam omnis rerum eum cum quis nemo ad? Quisquam dignissimos, ipsa perspiciatis perferendis optio voluptate inventore? Dignissimos, itaque.</div>
+		</PageLayout>
+
+
+		<ModalLayout parameters={{
+			isOpened: modalIsOpened,
+			title: 'Submit Prompt for AI Analysis',
+			subTitle: 'Provide a detailed prompt for analysis using AWS Bedrock\'s foundation models'
+		}} modalResult={() => setModalIsOpened(false)}>
+			<form onSubmit={() => { }}>
+
+				<SelectInput name="applicationName" label="Application name" placeholder="Select application..." required disabled={watchPrompt} control={promptFormGroup.control} options={Object.values(ApplicationNamesEnum).map(appName => {
+					return { label: toTitleCase(appName.replace('-', ' ')), value: appName }
+				})} rules={{ required: true }} />
+
+				<div className="flex items-center gap-3">
+					<div className="w-1/2">
+						<TextInput options={{
+							name: 'monthlyExpense',
+							type: 'number',
+							required: true,
+							disabled: watchPrompt,
+							label: 'Monthly expense',
+							placeholder: 'Monthly expense...'
+						}} control={promptFormGroup.control} rules={{ required: true }} />
+					</div>
+
+					<div className="w-1/2">
+						<TextInput options={{
+							name: 'yearlyExpense',
+							type: 'number',
+							required: true,
+							disabled: watchPrompt,
+							label: 'Yearly expense',
+							placeholder: 'Yearly expense...'
+						}} control={promptFormGroup.control} rules={{ required: true }} />
+					</div>
+				</div>
+
+				<label className="inline-flex items-center space-x-2 cursor-pointer mb-6">
+					<input type="checkbox" {...promptFormGroup.register("isRawPrompt")}
+						className="peer hidden" />
+					<div className="w-4 h-4 rounded border-2 border-slate-300 peer-checked:border-blue-600 peer-checked:bg-blue-600 flex items-center justify-center">
+						<svg className="hidden w-3 h-3 text-white peer-checked:block" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+							<path d="M5 13l4 4L19 7" />
+						</svg>
+					</div>
+					<span>Use raw prompt</span>
+				</label>
+
+				<TextareaInput options={{
+					name: 'rawPrompt',
+					placeholder: 'Raw prompt message...',
+					label: 'Raw prompt message',
+					required: true,
+					disabled: !watchPrompt,
+				}} control={promptFormGroup.control} rules={{ required: true }} />
+
+				<button type="submit" className="bg-blue-500 text-white w-full px-6 py-2.5 rounded-lg cursor-pointer text-base">Submit</button>
+			</form>
+		</ModalLayout>
+	</>
 }
