@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
+
 import { BedrockService } from 'src/common/bedrock/bedrock.service';
 
 @Injectable()
-export class AnalyseService {
+export class AnalysisService {
 
 	@Inject() private readonly bedrockService: BedrockService;
 
