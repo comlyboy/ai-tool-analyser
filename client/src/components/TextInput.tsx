@@ -4,13 +4,14 @@ import { Control, RegisterOptions, useController, UseFormReturn, } from "react-h
 import classnames from "classnames";
 
 interface ITextInputProps {
+	stylingClass?: string;
 	formControl?: UseFormReturn;
 	control?: Control<any>;
 	icon?: ReactNode;
 	action?: {
-		name: string;
+		name?: string;
 		icon?: JSX.Element;
-		onClick: () => void;
+		onClick?: () => void;
 		announcement?: string;
 		toggleIcon?: JSX.Element;
 		onToggleClick?: (isOn: boolean) => void;
@@ -32,9 +33,8 @@ interface ITextInputProps {
 
 // https://www.becomebetterprogrammer.com/typescript-pass-function-as-a-parameter/
 
-export default function TextInput(
-	inputProps: ITextInputProps
-): JSX.Element {
+export default function TextInput(inputProps: ITextInputProps) {
+
 	const { field, fieldState } = useController({
 		name: inputProps?.options?.name,
 		rules: inputProps?.rules,
@@ -44,7 +44,7 @@ export default function TextInput(
 	});
 
 	return (
-		<div className="mb-6 w-full">
+		<div className={classnames("mb-6 w-full", inputProps.stylingClass)}>
 			<div className="flex justify-between text-xs mb-1">
 				{inputProps?.options?.label && (
 					<label htmlFor={inputProps?.options?.id} className="text-xs">
@@ -56,43 +56,28 @@ export default function TextInput(
 				)}
 				{inputProps.action?.name && (
 					<p
-						onClick={inputProps.action?.onClick}
+						onClick={inputProps.action?.onClick && inputProps.action?.onClick}
 						className="text-xs text-blue-500 cursor-pointer hover:underline flex"
 					>
 						{" "}
-						{inputProps.action.icon && (
-							<span className="mr-1">{inputProps.action.icon}</span>
+						{inputProps.action?.icon && (
+							<span className="mr-1">{inputProps.action?.icon}</span>
 						)}{" "}
-						{inputProps.action.name}
+						{inputProps.action?.name}
 					</p>
 				)}
 			</div>
 			<div className="flex items-center mb-1 relative">
-				<input
-					id={inputProps?.options?.id}
-					className={classnames(
-						"placeholder-inherit bg-white focus:outline-none focus:border-blue-400 disabled:bg-slate-200 grow w-full px-4 py-3 border border-slate-300 rounded-lg",
-						{
-							"!placeholder-red-500 text-red-500 bg-red-50/25 !border-red-500 animate__animated animate__headShake":
-								fieldState.isTouched &&
-								fieldState.isDirty &&
-								fieldState.invalid,
-						}
-					)}
-					{...field}
-					{...inputProps.options}
-				/>
-				{inputProps.icon && (
-					<div
-						onClick={() => {
-							inputProps.action?.onClick();
-						}}
-						className="absolute right-2"
-					>
-						{inputProps.icon}
-					</div>
-				)}
-				{/* {formState.isValid && <CheckCircleIcon className="h-6 mt-1 text-emerald-500 -ml-9" />} */}
+				<input id={inputProps?.options?.id} className={classnames(
+					"placeholder-inherit bg-white focus:outline-none focus:border-blue-400 disabled:bg-slate-200 grow w-full px-4 py-3 border border-slate-300 rounded-lg",
+					{
+						"!placeholder-red-500 text-red-500 bg-red-50/25 !border-red-500 animate__animated animate__headShake":
+							fieldState.isTouched &&
+							fieldState.isDirty &&
+							fieldState.invalid,
+					}
+				)} {...field}	{...inputProps.options} />
+				{inputProps.icon && <div onClick={() => inputProps.action?.onClick && inputProps.action?.onClick()} className="absolute cursor-pointer right-2">{inputProps.icon}</div>}
 			</div>
 			{inputProps?.action?.announcement && (
 				<p className="text-xs text-emerald-500">

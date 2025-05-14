@@ -50,19 +50,13 @@ export default function TextareaInput(inputProps: ITextareaInputProps) {
 				</p>
 			)}
 		</div>
-		<textarea
-			id={inputProps?.options?.id}
-			className={classnames(
-				"w-full p-3 mt-1 placeholder-inherit border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-blue-400 disabled:bg-gray-200 disabled:shadow-none",
-				{
-					"!placeholder-red-500 text-red-500 !bg-red-50/25 !border-red-600 animate__animated animate__headShake":
-						fieldState.isTouched && fieldState.isDirty && fieldState.invalid,
-				}
-			)}
-			rows={4}
-			{...field}
-			{...inputProps.options}
-		/>
+		<textarea id={inputProps?.options?.id} className={classnames(
+			"w-full p-3 mt-1 placeholder-inherit border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-blue-400 disabled:bg-gray-200 disabled:shadow-none",
+			{
+				"!placeholder-red-500 text-red-500 !bg-red-50/25 !border-red-600 animate__animated animate__headShake":
+					fieldState.isTouched && fieldState.isDirty && fieldState.invalid,
+			}
+		)} rows={5} {...field} {...inputProps.options} />
 		{
 			fieldState.isTouched && fieldState.isDirty && fieldState.invalid && <div>
 				{fieldState.error?.type === "required" && <p className="text-red-500 italic text-xxs">{fieldState.error?.message || 'Input is required'}</p>}

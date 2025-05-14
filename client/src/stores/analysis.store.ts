@@ -1,22 +1,15 @@
 import { create } from "zustand";
-import { ApplicationNamesType } from "../types";
-import { useNotificationStore } from "./notification.store";
+
 import { sendHttpRequest } from "../http";
-import { IBaseErrorObject } from "../interface/base.interface";
+import { useNotificationStore } from "./notification.store";
+import { IBaseErrorObject, CreateAnalysisDto, IAnalysis } from "../interface";
 
 interface IThemeStore {
-	analysis: Record<string, any> | null;
+	analysis: IAnalysis | null;
 	isLoading: boolean,
 	error: IBaseErrorObject | null,
-	createAnalysis: (analysisDto: {
-		applicationName: ApplicationNamesType;
-		yearlyExpense: number;
-		isRawPrompt?: boolean;
-		monthlyExpense: number;
-		rawPromptMessage?: string;
-	}) => Promise<void>;
+	createAnalysis: (analysisDto: CreateAnalysisDto) => Promise<boolean | undefined>;
 }
-
 
 export const useAnalysisStore = create<IThemeStore>((set) => ({
 	analysis: null,
@@ -25,13 +18,14 @@ export const useAnalysisStore = create<IThemeStore>((set) => ({
 	createAnalysis: async (analysisDto) => {
 		try {
 			set({ isLoading: true });
-			const { data, message } = await sendHttpRequest<any>({
+			const { data, message } = await sendHttpRequest<{ analysis: IAnalysis }>({
 				url: '/analysis',
 				method: 'post',
 				data: { ...analysisDto }
 			});
 			useNotificationStore.getState().sendAlert(message);
 			set({ analysis: data.analysis });
+			return true;
 		} catch (error) {
 			console.log('error', error);
 			useNotificationStore.getState().sendErrorAlert(error);
