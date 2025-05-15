@@ -59,7 +59,7 @@ export class BedrockService {
 
 		const features = createAnalysisDto.applicationFeatures.map(feature => `- ${feature}`).join("\n");
 
-		return `
+		const nonRawContext = `
 			We are currently using ${createAnalysisDto.applicationName} for internal team tool.
 
 			Here are the key details of our current setup:
@@ -97,6 +97,8 @@ export class BedrockService {
 			Avoid guessing unknown tools — only include alternatives with reliable public information as of ${new Date().toDateString()}.
 			Be specific, concise, and base all assessments on current ${new Date().toDateString()} pricing and product capabilities.
 		`;
+
+		return createAnalysisDto.isRawPrompt ? createAnalysisDto.rawPromptMessage : nonRawContext;
 	}
 
 }

@@ -129,7 +129,7 @@ export default function AnalysisFormComponent({ onSuccess }: { onSuccess: () => 
 		</label>
 
 		<TextareaInput options={{
-			name: 'rawPrompt',
+			name: 'rawPromptMessage',
 			placeholder: 'Raw prompt message...',
 			label: 'Raw prompt message',
 			required: true,
